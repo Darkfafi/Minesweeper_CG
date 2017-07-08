@@ -8,6 +8,8 @@ window.onload = function()
 function main()
 {
 	app = new PIXI.Application(800, 600, {backgroundColor : 0x2299ff});
-	document.body.appendChild(app.view);
-	console.log("Hello World!");
+	document.getElementById("wrapper").appendChild(app.view);
+	
+	var testGrid = new Grid(10, 10);
+	console.log(testGrid.getAllTiles());
 }
