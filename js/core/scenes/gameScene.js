@@ -6,10 +6,13 @@ function GameScene()
 	var gridContainer = new PIXI.Container();
 	var currentInteractionState = 0;
 	var bombAmount = 0;
+	var gameUI;
 
 	this.onCreate = function()
 	{
 		this.createGameWHP(10, 10, 0.25);
+		gameUI = new GameUI(this);
+		gameUI.getEventCenterPoint().addEventListener(GameUI.prototype.EVENT_NEW_SELECTION_TAB_ICON, onNewTabIcon);
 	}
 
 	this.onUpdate = function(deltaTime)
@@ -79,6 +82,7 @@ function GameScene()
 		switch(this.getCurrentInteractionState())
 		{
 			case 0:
+				if(tile.getFlaggedState()) { return; }
 				this.tryTile(tile);
 			break;
 			case 1:
@@ -86,6 +90,11 @@ function GameScene()
 			break;
 		}
 	}.bind(this);
+
+	var onNewTabIcon = function(iconType)
+	{
+		currentInteractionState = iconType;
+	}
 }
 
 GameScene.prototype.tileClearChain = function(tile)
@@ -104,6 +113,7 @@ GameScene.prototype.tryTile = function(tile)
 {
 	tile.setDiscoveredState(true);
 	tile.setIsInteractable(false);
+	tile.setFlaggedState(false);
 
 	if(tile.getIsBombTile())
 	{

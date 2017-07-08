@@ -24,6 +24,10 @@ function SweepTile(gridIndexX, gridIndexY, grid)
 	discoveredSprite.anchor.x = discoveredSprite.anchor.y = 0.5;
 	discoveredSprite.visible = false;
 
+	var flagSprite = PIXI.Sprite.fromImage('assets/flag.png');
+	flagSprite.anchor.x = flagSprite.anchor.y = 0.5;
+	flagSprite.visible = false;
+
 	this.getTileEventCenterPoint = function()
 	{
 		return tileEventCenterPoint;
@@ -65,10 +69,15 @@ function SweepTile(gridIndexX, gridIndexY, grid)
 		this.tileText.visible = false;
 		tileSprite.addChild(this.tileText);
 
-		bombSprite.width = bombSprite.height = size * 0.7;
+		bombSprite.scale.x = bombSprite.scale.y = 0.7;
 		tileSprite.addChild(bombSprite);
 		bombSprite.x = tileSprite.width * 0.5;
 		bombSprite.y = tileSprite.height * 0.5;
+
+		tileSprite.addChild(flagSprite);
+		flagSprite.scale.x = flagSprite.scale.y = 0.8;
+		flagSprite.x = tileSprite.width * 0.5;
+		flagSprite.y = tileSprite.height * 0.4;
 
 		tileSprite.on('pointerdown', onInteraction);
 
@@ -83,6 +92,7 @@ function SweepTile(gridIndexX, gridIndexY, grid)
 	this.setFlaggedState = function(flaggedState)
 	{
 		hasBeenFlagged = flaggedState;
+		flagSprite.visible = hasBeenFlagged;
 	}
 
 	this.getTileSprite = function()
