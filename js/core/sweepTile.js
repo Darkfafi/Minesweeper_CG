@@ -4,6 +4,10 @@ function SweepTile(gridIndexX, gridIndexY, grid)
 {
 	Tile.call(this, gridIndexX, gridIndexY, grid);
 
+	this.tileText = new PIXI.Text();
+	this.tileText.anchor.x = this.tileText.anchor.y = 0.5;
+	this.tileText.visible = false;
+
 	var isBombTile = isBombTile;
 	var hasBeenDiscovered = false;
 	var hasBeenFlagged = false;
@@ -11,6 +15,14 @@ function SweepTile(gridIndexX, gridIndexY, grid)
 	var isInteractable = false;
 	var tileEventCenterPoint = new EventCenterPoint();
 	var tileObject = this;
+
+	var bombSprite = PIXI.Sprite.fromImage('assets/mine.png');
+	bombSprite.anchor.x = bombSprite.anchor.y = 0.5;
+	bombSprite.visible = false;
+
+	var discoveredSprite = PIXI.Sprite.fromImage('assets/discoveredTile.png');
+	discoveredSprite.anchor.x = discoveredSprite.anchor.y = 0.5;
+	discoveredSprite.visible = false;
 
 	this.getTileEventCenterPoint = function()
 	{
@@ -40,8 +52,23 @@ function SweepTile(gridIndexX, gridIndexY, grid)
 	{
 		tileSprite = PIXI.Sprite.fromImage(spriteLocation);
 
+		tileSprite.width = tileSprite.height = size;
 		tileSprite.x = this.getGridIndexX() * size;
 		tileSprite.y = this.getGridIndexY() * size;
+
+		tileSprite.addChild(discoveredSprite);
+		discoveredSprite.x = tileSprite.width * 0.5;
+		discoveredSprite.y = tileSprite.height * 0.5;
+
+		this.tileText.x = tileSprite.width * 0.5;
+		this.tileText.y = tileSprite.height * 0.5;
+		this.tileText.visible = false;
+		tileSprite.addChild(this.tileText);
+
+		bombSprite.width = bombSprite.height = size * 0.7;
+		tileSprite.addChild(bombSprite);
+		bombSprite.x = tileSprite.width * 0.5;
+		bombSprite.y = tileSprite.height * 0.5;
 
 		tileSprite.on('pointerdown', onInteraction);
 
@@ -66,6 +93,7 @@ function SweepTile(gridIndexX, gridIndexY, grid)
 	this.setIsBombTile = function(isBomb)
 	{
 		isBombTile = isBomb;
+		bombSprite.visible = isBombTile && this.getDiscoveredState();
 	}
 
 	this.getIsBombTile = function()
@@ -76,6 +104,13 @@ function SweepTile(gridIndexX, gridIndexY, grid)
 	this.setDiscoveredState = function(discoveredState)
 	{
 		hasBeenDiscovered = discoveredState;
+		
+		discoveredSprite.visible = hasBeenDiscovered;
+
+		if(this.getIsBombTile())
+		{
+			bombSprite.visible = hasBeenDiscovered;
+		}
 	}
 
 	this.getDiscoveredState = function()
@@ -106,5 +141,6 @@ SweepTile.prototype.EVENT_INTERACTION = "InteractionEvent";
 
 SweepTile.prototype.showNumber = function(number)
 {
-	var text = new PIXI.Text(number);
+	this.tileText.text = number;
+	this.tileText.visible = true;
 }
