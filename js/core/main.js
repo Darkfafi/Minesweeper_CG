@@ -18,6 +18,8 @@ function main()
 		sceneManager.update(app.ticker.elapsedMS / 1000);
 	});
 
+	sceneManager.addScene("menuScene", MenuScene);
 	sceneManager.addScene("gameScene", GameScene);
-	sceneManager.setScene("gameScene");
+
+	sceneManager.setScene("menuScene"); // Index Scene
 }
