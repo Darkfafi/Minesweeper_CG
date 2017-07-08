@@ -2,22 +2,32 @@ GameScene.prototype = Object.create(Scene.prototype);
 function GameScene()
 {	
 	Scene.call(this);
+	this.isRunning = false;
+
 	var grid;
 	var gridContainer = new PIXI.Container();
 	var currentInteractionState = 0;
-	var bombAmount = 0;
-	var gameUI;
+	var gameUI = new GameUI(this);;
+	var time = -1337;
 
 	this.onCreate = function()
 	{
-		this.createGameWHP(10, 10, 0.25);
-		gameUI = new GameUI(this);
+		this.createGameWHP(20, 15, 0.15625);
+		time = this.getTimeForGrid(20, 15);
+		isRunning = true;
 		gameUI.getEventCenterPoint().addEventListener(GameUI.prototype.EVENT_NEW_SELECTION_TAB_ICON, onNewTabIcon);
 	}
 
 	this.onUpdate = function(deltaTime)
 	{
-
+		if(time < 0 || !isRunning) { return; }
+		time -= deltaTime;
+		if(time <= 0)
+		{
+			time = 0;
+			this.endGame(false, "Out of Time!");
+		}
+		gameUI.setTimeLeftText(time);
 	}
 
 	this.onDestroy = function()
@@ -47,7 +57,7 @@ function GameScene()
 		this.addChild(gridContainer);
 
 		gridContainer.x = app.renderer.width * 0.5;
-		gridContainer.y = app.renderer.height * 0.5;
+		gridContainer.y = (app.renderer.height * 0.5) - (app.renderer.height * 0.05);
 		gridContainer.pivot.x = gridContainer.width / 2;
 		gridContainer.pivot.y = gridContainer.height / 2;
 
@@ -59,13 +69,19 @@ function GameScene()
 		return grid;
 	}
 
+	this.getTimeForGrid = function(xTiles, yTiles)
+	{
+		var timeReturn = Math.floor((xTiles * yTiles) / 100) * 120;
+		return timeReturn;
+	}
+
 	var assignBombs = function(percentage)
 	{
 		if(percentage <= 0) { return; }
 		if(percentage > 1) { percentage = 1; }
 		var allTiles = grid.getAllTiles();
 		var amountOfBombs = allTiles.length * percentage;
-		bombAmount = 0;
+		var bombAmount = 0;
 		var currentIndex = 0;
 		while(amountOfBombs > 0 && allTiles.length > 0)
 		{
@@ -75,6 +91,8 @@ function GameScene()
 			amountOfBombs--;
 			bombAmount++;
 		}
+
+		gameUI.setBombAmountText(bombAmount);
 	}
 
 	var onTilePressed = function(tile)
@@ -149,6 +167,7 @@ GameScene.prototype.endGame = function(wonGameBoolean, reasonString)
 		tiles[i].setDiscoveredState(true);
 		tiles[i].setIsInteractable(false);
 	}
+	isRunning = false;
 }
 
 GameScene.prototype.checkWinCondition = function()
