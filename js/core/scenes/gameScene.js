@@ -122,15 +122,22 @@ GameScene.prototype.tileClearChain = function(tile)
 	{
 		if(!neighbours[i].getIsBombTile() && !neighbours[i].getDiscoveredState())
 		{
-			this.tryTile(neighbours[i]);
+			this.tryTileDelayed(neighbours[i], 75);
 		}
 	}
 }
 
+GameScene.prototype.tryTileDelayed = function(tile, delayTime)
+{
+	tile.setIsInteractable(false);
+	setTimeout(function (){ this.tryTile(tile); }.bind(this), delayTime);
+	
+}
+
 GameScene.prototype.tryTile = function(tile)
 {
-	tile.setDiscoveredState(true);
 	tile.setIsInteractable(false);
+	tile.setDiscoveredState(true);
 	tile.setFlaggedState(false);
 
 	if(tile.getIsBombTile())
@@ -158,6 +165,7 @@ GameScene.prototype.tryTile = function(tile)
 		}
 	}
 }
+
 
 GameScene.prototype.endGame = function(wonGameBoolean, reasonString)
 {

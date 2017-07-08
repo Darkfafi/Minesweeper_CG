@@ -28,6 +28,28 @@ function SweepTile(gridIndexX, gridIndexY, grid)
 	flagSprite.anchor.x = flagSprite.anchor.y = 0.5;
 	flagSprite.visible = false;
 
+	var sizeEffect = -1;
+	var orgScale = 0;
+	var oc = null;
+	var ct = 0;
+	var dur = 0;
+	var dir = -1337;
+
+	app.ticker.add(function()
+	{
+		if(sizeEffect < 0 || tileSprite == null) { return; }
+		if(orgScale == 0) { orgScale = tileSprite.scale.x; }
+		if(dir == -1337) { dir = (sizeEffect - tileSprite.scale.y); } 
+		ct += app.ticker.elapsedMS/1000;
+		tileSprite.scale.x = tileSprite.scale.y = dir*ct/dur + orgScale;
+		if((dir < 0 &&  tileSprite.scale.x <= sizeEffect) || (dir > 0 && tileSprite.scale.x >= sizeEffect))
+		{
+			tileSprite.scale.x = tileSprite.scale.y = sizeEffect;
+			if(oc != null)
+				oc();
+		}
+	});
+
 	this.getTileEventCenterPoint = function()
 	{
 		return tileEventCenterPoint;
@@ -56,28 +78,26 @@ function SweepTile(gridIndexX, gridIndexY, grid)
 	{
 		tileSprite = PIXI.Sprite.fromImage(spriteLocation);
 
+		tileSprite.anchor.x = tileSprite.anchor.y = 0.5;
+
 		tileSprite.width = tileSprite.height = size;
 		tileSprite.x = this.getGridIndexX() * size;
 		tileSprite.y = this.getGridIndexY() * size;
 
-		tileSprite.addChild(discoveredSprite);
-		discoveredSprite.x = tileSprite.width * 0.5;
-		discoveredSprite.y = tileSprite.height * 0.5;
+		tileSprite.x += tileSprite.width * 0.5;
+		tileSprite.y += tileSprite.height * 0.5;
 
-		this.tileText.x = tileSprite.width * 0.5;
-		this.tileText.y = tileSprite.height * 0.5;
+		tileSprite.addChild(discoveredSprite);
+
 		this.tileText.visible = false;
 		tileSprite.addChild(this.tileText);
 
 		bombSprite.scale.x = bombSprite.scale.y = 0.7;
 		tileSprite.addChild(bombSprite);
-		bombSprite.x = tileSprite.width * 0.5;
-		bombSprite.y = tileSprite.height * 0.5;
 
 		tileSprite.addChild(flagSprite);
 		flagSprite.scale.x = flagSprite.scale.y = 0.8;
-		flagSprite.x = tileSprite.width * 0.5;
-		flagSprite.y = tileSprite.height * 0.4;
+		flagSprite.y = tileSprite.height * -0.1;
 
 		tileSprite.on('pointerdown', onInteraction);
 
@@ -121,6 +141,11 @@ function SweepTile(gridIndexX, gridIndexY, grid)
 		{
 			bombSprite.visible = hasBeenDiscovered;
 		}
+
+		this.doScale(1.1, 0.2, function()
+			{
+				tileObject.doScale(0.95, 0.3, function(){ tileObject.doScale(1, 0.2, null); });
+			});
 	}
 
 	this.getDiscoveredState = function()
@@ -138,6 +163,15 @@ function SweepTile(gridIndexX, gridIndexY, grid)
 		}
 
 		return n;
+	}
+
+	this.doScale = function(endScale, duration, callback)
+	{
+		sizeEffect = endScale;
+		oc = callback;
+		ct = 0;
+		dir = -1337;
+		dur = duration;
 	}
 
 	var onInteraction = function()
