@@ -99,9 +99,9 @@ function SweepTile(gridIndexX, gridIndexY, grid)
 		flagSprite.scale.x = flagSprite.scale.y = 0.8;
 		flagSprite.y = tileSprite.height * -0.1;
 
-		tileSprite.on('mousedown', onInteraction);
-		tileSprite.on('rightdown', onRightInteraction);
-		tileSprite.on('touchstart', onInteraction);
+		tileSprite.on('mousedown', this.onInteraction);
+		tileSprite.on('rightdown', this.onRightInteraction);
+		tileSprite.on('touchstart', this.onInteraction);
 		return tileSprite;
 	}
 
@@ -190,15 +190,13 @@ function SweepTile(gridIndexX, gridIndexY, grid)
 		return jsonFormat;
 	}
 
-	var onInteraction = function()
+	this.onInteraction = function()
 	{
-		if(!isInteractable) { return; }
 		tileEventCenterPoint.dispatchEvent(SweepTile.prototype.EVENT_INTERACTION, tileObject);
 	}
 
-	var onRightInteraction = function()
+	this.onRightInteraction = function()
 	{
-		if(!isInteractable) { return; }
 		tileEventCenterPoint.dispatchEvent(SweepTile.prototype.EVENT_INTERACTION_RIGHT, tileObject);
 	}
 }

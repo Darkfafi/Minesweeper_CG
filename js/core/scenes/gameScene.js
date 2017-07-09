@@ -11,9 +11,12 @@ function GameScene()
 	var currentInteractionState = 0;
 	var gameUI = new GameUI(this);;
 	var time = -1337;
+	var botPlayer = null;
 
 	this.onCreate = function(sceneArgs)
 	{
+		botPlayer = ((sceneArgs.isBotPlaying) ? 1 : null);
+
 		if(sceneArgs.levelJson == null)
 		{
 			this.createGameWithGeneralInfo(sceneArgs.width, sceneArgs.height, sceneArgs.bombAmount);
@@ -23,9 +26,14 @@ function GameScene()
 			this.createGameWithJsonInfo(sceneArgs.levelJson)
 		}
 
+		botPlayer = ((sceneArgs.isBotPlaying) ? new BotPlayer(sceneArgs.botMistakePercentage, grid) : null);
+
 		time = this.getTimeForGrid(grid.getTileAmountX(), grid.getTileAmountY());
 		isRunning = true;
 		gameUI.getEventCenterPoint().addEventListener(GameUI.prototype.EVENT_NEW_SELECTION_TAB_ICON, onNewTabIcon);
+
+		if(botPlayer != null)
+			setTimeout(botPlayer.start, 500);
 	}
 
 	this.onUpdate = function(deltaTime)
@@ -96,8 +104,9 @@ function GameScene()
 		gridContainer.y = (app.renderer.height * 0.5) - (app.renderer.height * 0.05);
 		gridContainer.pivot.x = gridContainer.width / 2;
 		gridContainer.pivot.y = gridContainer.height / 2;
-
-		setTimeout(this.activateGrid, 500);
+		
+		if(botPlayer == null)
+			setTimeout(this.activateGrid, 500);
 	}
 
 	this.activateGrid = function()

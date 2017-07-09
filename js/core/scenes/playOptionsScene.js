@@ -7,6 +7,8 @@ function PlayOptionsScene()
 	var setHeight = Globals.getMinGridHeight();
 	var setBombAmount = 10;
 	var jsonSet;
+	var botPlaying = false;
+	var botMistakePercentage = 10;
 
 	var widthButton, heightButton, amountButton;
 
@@ -34,9 +36,23 @@ function PlayOptionsScene()
 		amountButton.sprite.on('pointerdown', onAmountClicked);
 
 		var playButton = new Button(AssetLocations.getButtonLocation());
-		customizeButtonDesign(playButton, "Play!", app.renderer.width * 0.87, firstButtonRowHeight);
+		customizeButtonDesign(playButton, "Play!", app.renderer.width * 0.87, firstButtonRowHeight - (playButton.sprite.height + 10));
 		playButton.textObject.style.fill = 0x00FF00;
 		playButton.sprite.on('pointerdown', onPlayClicked);
+
+		var botPlayButton = new Button(AssetLocations.getButtonLocation());
+		customizeButtonDesign(botPlayButton, "Bot Play!", app.renderer.width * 0.87, firstButtonRowHeight + (botPlayButton.sprite.height + 10));
+		botPlayButton.textObject.style.fill = 0x00FFFF;
+		botPlayButton.sprite.on('pointerdown', 
+		function()
+		{
+			botMistakePercentage = prompt("Please Enter the chance the bot could make a mistake (0-100)", botMistakePercentage);
+			if(!botMistakePercentage || isNaN(botMistakePercentage)) { botMistakePercentage = 10; return; }
+			if(botMistakePercentage < 0) { botMistakePercentage = 0;}
+			if(botMistakePercentage > 100) { botMistakePercentage = 100;}
+			botPlaying = true;
+			onPlayClicked(); 
+		});
 
 		var orText = new PIXI.Text("Or");
 		orText.anchor.x = orText.anchor.y = 0.5;
@@ -66,6 +82,7 @@ function PlayOptionsScene()
 		this.addChild(heightButton);
 		this.addChild(amountButton);
 		this.addChild(playButton);
+		this.addChild(botPlayButton);
 		this.addChild(backButton);
 		this.addChild(importAndPlayButton);
 		this.addChild(orText);
@@ -152,6 +169,7 @@ function PlayOptionsScene()
 	var onJsonLoaded = function(jsonData)
 	{
 		var success = true;
+		var err = "";
 		try 
 		{
         	jsonSet = JSON.parse(jsonData);
@@ -162,13 +180,14 @@ function PlayOptionsScene()
 	    } 
 	    catch (e)
 	    {
+	    	err = e;
 	        success = false;
 	    }
 
 	    if(!success)
 	    {
 	    	jsonSet = null;
-	    	console.error("Error: Did not receive level json file: " + e);
+	    	console.error("Error: Did not receive level json file < " + err + " >");
 	    	return;
 	    }
 	    
@@ -177,6 +196,6 @@ function PlayOptionsScene()
 
 	var getGameSceneArgs = function()
 	{
-		return  {"width":setWidth, "height":setHeight, "bombAmount":setBombAmount, "levelJson":jsonSet};
+		return  {"width":setWidth, "height":setHeight, "bombAmount":setBombAmount, "levelJson":jsonSet, "isBotPlaying":botPlaying, "botMistakePercentage":botMistakePercentage};
 	}
 }

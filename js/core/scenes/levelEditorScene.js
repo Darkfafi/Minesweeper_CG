@@ -9,7 +9,7 @@ function LevelEditorScene()
 
 	this.onCreate = function(sceneArgs)
 	{
-		this.createVisualGrid(9, 9);
+		this.createVisualGrid(Globals.getMinGridWidth(), Globals.getMinGridHeight());
 		levelEditorUI = new LevelEditorUI(this);
 		levelEditorUI.getEventCenterPoint().addEventListener(LevelEditorUI.prototype.EVENT_ON_BUTTON_PRESSED, onUIButtonPressed);
 	}
