@@ -121,7 +121,12 @@ function LevelEditorScene()
 				var fileName = prompt("Please Enter a file name for your level export", "myOwnLevel");
 				if(fileName) 
 				{ 
-					console.log("Save file with filename: " + fileName);
+					console.log(grid);
+					var jsonData = grid.toJsonData();
+					var json = JSON.stringify(jsonData);
+					var blob = new Blob([json], {type: "application/json"});
+					saveAs(blob, fileName + ".json");
+					console.log("Saved file with filename: " + fileName + ".json");
 				}
 			break;
 		}

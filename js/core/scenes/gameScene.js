@@ -18,8 +18,16 @@ function GameScene()
 
 	this.onCreate = function()
 	{
-		this.createGameWHP(globalWidthSet, globalHeightSet, globalBombAmountSet); // Note: 0.152%
-		time = this.getTimeForGrid(globalWidthSet, globalHeightSet);
+		if(jsonSet == null)
+		{
+			this.createGameWithGeneralInfo(globalWidthSet, globalHeightSet, globalBombAmountSet);
+		}
+		else
+		{
+			this.createGameWithJsonInfo(jsonSet)
+		}
+
+		time = this.getTimeForGrid(grid.getTileAmountX(), grid.getTileAmountY());
 		isRunning = true;
 		gameUI.getEventCenterPoint().addEventListener(GameUI.prototype.EVENT_NEW_SELECTION_TAB_ICON, onNewTabIcon);
 	}
@@ -46,7 +54,28 @@ function GameScene()
 		return currentInteractionState;
 	}
 
-	this.createGameWHP = function(width, height, percentageOrAmount)
+	this.createGameWithGeneralInfo = function(width, height, percentageOrAmount)
+	{
+		this.createGameGrid(width, height);
+		assignBombs(percentageOrAmount);
+	}
+
+	this.createGameWithJsonInfo = function(jsonInfo)
+	{
+		this.createGameGrid(jsonInfo.width, jsonInfo.height);
+		var ba = 0;
+		for(var i = 0; i < jsonInfo.tiles.length; i++)
+		{
+			if(grid.getTile(jsonInfo.tiles[i].xPos, jsonInfo.tiles[i].yPos).setIsBombTile(jsonInfo.tiles[i].isBomb))
+			{
+				ba ++;
+			}
+		}
+
+		gameUI.setBombAmountText(ba);
+	}
+
+	this.createGameGrid = function(width, height)
 	{
 		if(grid != null) { return; }
 
@@ -66,8 +95,6 @@ function GameScene()
 		gridContainer.y = (app.renderer.height * 0.5) - (app.renderer.height * 0.05);
 		gridContainer.pivot.x = gridContainer.width / 2;
 		gridContainer.pivot.y = gridContainer.height / 2;
-
-		assignBombs(percentageOrAmount);
 
 		setTimeout(this.activateGrid, 500);
 	}

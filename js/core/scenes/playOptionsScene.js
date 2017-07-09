@@ -147,11 +147,39 @@ function PlayOptionsScene()
 
 	var onImportClicked = function()
 	{
-		// Import & play
+		// Import & Play
 		globalWidthSet = null;
 		globalHeightSet = null;
 		globalBombAmountSet = null;
-		jsonSet = null; // <-- Json import load
+		jsonSet = null; 
+
+		var jsonFileLocation = prompt("Please copy/paste the content of the level json file here", "Tip: 'Open json file -> Ctrl A -> Ctrl C' to copy the content");
+		onJsonLoaded(jsonFileLocation)
+	}
+
+	var onJsonLoaded = function(jsonData)
+	{
+		var success = true;
+		try 
+		{
+        	jsonSet = JSON.parse(jsonData);
+        	if(!jsonSet.name || jsonSet.name != "gridData")
+		    {
+		    	success = false;
+		    }
+	    } 
+	    catch (e)
+	    {
+	        success = false;
+	    }
+
+	    if(!success)
+	    {
+	    	jsonSet = null;
+	    	console.error("Error: Did not receive level json file: " + e);
+	    	return;
+	    }
+	    
 		sceneManager.setScene("gameScene");
 	}
 }

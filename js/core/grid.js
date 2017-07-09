@@ -62,6 +62,26 @@ function Grid(tilesX, tilesY, optionalTileClass)
 	this.generateGrid(tilesX, tilesY, optionalTileClass);
 }
 
+Grid.prototype.toJsonData = function()
+{
+	var allTiles = this.getAllTiles();
+	var tileJsons = [];
+
+	for(var i = 0; i < allTiles.length; i++)
+	{
+		tileJsons.push(allTiles[i].toJsonData());
+	}
+
+	var jsonFormat = 
+	{
+		"name": "gridData",
+		"width": this.getTileAmountX(),
+		"height": this.getTileAmountY(),
+		"tiles": tileJsons
+	}
+
+	return jsonFormat;
+}
 
 function Tile(gridIndexX, gridIndexY, grid)
 {
@@ -94,4 +114,15 @@ function Tile(gridIndexX, gridIndexY, grid)
 
 		return neighbours;
 	}
+}
+
+Tile.prototype.toJsonData = function()
+{
+	var jsonObject = 
+	{
+		"xPos":gridXPos,
+		"yPos":gridYPos
+	}
+
+	return jsonObject;
 }

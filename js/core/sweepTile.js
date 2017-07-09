@@ -8,7 +8,7 @@ function SweepTile(gridIndexX, gridIndexY, grid)
 	this.tileText.anchor.x = this.tileText.anchor.y = 0.5;
 	this.tileText.visible = false;
 
-	var isBombTile = isBombTile;
+	var isBombTile = false;
 	var hasBeenDiscovered = false;
 	var hasBeenFlagged = false;
 	var tileSprite;
@@ -125,6 +125,7 @@ function SweepTile(gridIndexX, gridIndexY, grid)
 	{
 		isBombTile = isBomb;
 		bombSprite.visible = isBombTile && this.getDiscoveredState();
+		return isBomb;
 	}
 
 	this.getIsBombTile = function()
@@ -173,6 +174,20 @@ function SweepTile(gridIndexX, gridIndexY, grid)
 		ct = 0;
 		dir = -1337;
 		dur = duration;
+	}
+
+	this.toJsonData = function()
+	{
+		var jsonFormat = 
+		{
+			"xPos":this.getGridIndexX(),
+			"yPos":this.getGridIndexY(),
+			"isBomb":this.getIsBombTile(),
+			"isDiscovered":this.getDiscoveredState(),
+			"isInteractable":this.getIsInteractable(),
+			"isFlagged":this.getFlaggedState()
+		}
+		return jsonFormat;
 	}
 
 	var onInteraction = function()
