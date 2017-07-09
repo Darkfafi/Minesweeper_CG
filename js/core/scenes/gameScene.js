@@ -50,7 +50,6 @@ function GameScene()
 		for(var i = 0; i < tiles.length; i++)
 		{
 			var sprt = tiles[i].setTileSprite('assets/tile.png', 32);
-			tiles[i].setIsInteractable(true);
 			tiles[i].getTileEventCenterPoint().addEventListener(SweepTile.prototype.EVENT_INTERACTION, onTilePressed);
 			tiles[i].getTileEventCenterPoint().addEventListener(SweepTile.prototype.EVENT_INTERACTION_RIGHT, onTilePressedRight);
 			gridContainer.addChild(sprt);
@@ -64,6 +63,17 @@ function GameScene()
 		gridContainer.pivot.y = gridContainer.height / 2;
 
 		assignBombs(percentage);
+
+		setTimeout(this.activateGrid, 500);
+	}
+
+	this.activateGrid = function()
+	{
+		var tiles = grid.getAllTiles();
+		for(var i = 0; i < tiles.length; i++)
+		{
+			tiles[i].setIsInteractable(true);
+		}
 	}
 
 	this.getGrid = function()

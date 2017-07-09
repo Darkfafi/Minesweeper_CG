@@ -5,35 +5,35 @@ function MenuScene()
 	Scene.call(this);
 
 	var logoImage = PIXI.Sprite.fromImage('assets/logo.png');
-	var playButton = PIXI.Sprite.fromImage('assets/button.png');
 
 	this.onCreate = function()
 	{
-		this.addChild(logoImage);
-		this.addChild(playButton);
-
 		logoImage.anchor.x = logoImage.anchor.y = 0.5;
 		logoImage.x = app.renderer.width * 0.5;
 		logoImage.y = app.renderer.height * 0.2;
 		logoImage.scale.x = logoImage.scale.y = 1.5;
 
-		playButton.anchor.x = playButton.anchor.y = 0.5;
-		playButton.x = app.renderer.width * 0.5;
-		playButton.y = app.renderer.height * 0.5;
-		playButton.width = 256;
-		playButton.height = 128;
+		var playButton = new Button(AssetLocations.getButtonLocation());
+		playButton.scale.x = playButton.scale.y = 3;
+		playButton.x = (app.renderer.width * 0.5) - (playButton.sprite.width * 0.5 * playButton.scale.x);
+		playButton.y = app.renderer.height * 0.38;
+		playButton.textObject.scale.x = playButton.textObject.scale.y = 0.6;
+		playButton.textObject.text = "Play!";
+		playButton.textObject.style.fill = 0xffffff;
+		playButton.sprite.on('pointerdown', onClickedPlay);
 
-		var playText = new PIXI.Text("Play!");
-		playText.style.fill = 0xffffff;
-		playText.anchor.x = 0.5;
-		playText.anchor.y = 0.7;
-		playText.scale.x = playText.scale.y = 0.6;
-		playText.resolution = 2;
-		playButton.addChild(playText);
+		var levelEditorButton = new Button(AssetLocations.getButtonLocation());
+		levelEditorButton.scale.x = levelEditorButton.scale.y = 3;
+		levelEditorButton.x = (app.renderer.width * 0.5) - (levelEditorButton.sprite.width * 0.5 * levelEditorButton.scale.x);
+		levelEditorButton.y = app.renderer.height * 0.6;
+		levelEditorButton.textObject.scale.x = levelEditorButton.textObject.scale.y = 0.420;
+		levelEditorButton.textObject.text = "Level Editor";
+		levelEditorButton.textObject.style.fill = 0xffffff;
+		levelEditorButton.sprite.on('pointerdown', onClickedLevelEditor);
 
-		playButton.on('pointerdown', onClickedPlay);
-		playButton.interactive = true;
-		playButton.buttonMode = true;
+		this.addChild(logoImage);
+		this.addChild(playButton);
+		this.addChild(levelEditorButton);
 	}
 
 	this.onUpdate = function(deltaTime)
@@ -49,5 +49,10 @@ function MenuScene()
 	var onClickedPlay = function()
 	{
 		sceneManager.setScene("gameScene");
+	}
+
+	var onClickedLevelEditor = function()
+	{
+		sceneManager.setScene("levelEditorScene");
 	}
 }
