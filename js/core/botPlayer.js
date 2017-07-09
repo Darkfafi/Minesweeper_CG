@@ -4,8 +4,8 @@ function BotPlayer(mistakeChance, gridToInteractWith)
 	var chanceForMistakes = mistakeChance;
 	var grid = gridToInteractWith;
 	var isRunning = false;
-	var minThinkTime = 1000;
-	var maxThinkTime = 1000;
+	var minThinkTime = 300;
+	var maxThinkTime = 700;
 	var lastX = -1;
 	var lastY = -1;
 
