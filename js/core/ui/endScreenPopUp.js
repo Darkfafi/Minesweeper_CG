@@ -86,7 +86,7 @@ function EndScreenPopUp(wonBoolean, endReasonString, container)
 
 	var onReplayPressed = function()
 	{
-		sceneManager.setScene("gameScene");
+		sceneManager.setScene("gameScene", SceneManager.prototype.SAME_ARGS_PARAMETER);
 	}
 
 	var onMenuPressed = function()

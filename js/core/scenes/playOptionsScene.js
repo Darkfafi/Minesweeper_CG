@@ -1,4 +1,3 @@
-
 PlayOptionsScene.prototype = Object.create(Scene.prototype);
 function PlayOptionsScene()
 {
@@ -7,10 +6,11 @@ function PlayOptionsScene()
 	var setWidth = Globals.getMinGridWidth();
 	var setHeight = Globals.getMinGridHeight();
 	var setBombAmount = 10;
+	var jsonSet;
 
 	var widthButton, heightButton, amountButton;
 
-	this.onCreate = function()
+	this.onCreate = function(sceneArgs)
 	{
 		var titleText = new PIXI.Text("Play Options:");
 		titleText.anchor.x = titleText.anchor.y = 0.5;
@@ -18,22 +18,23 @@ function PlayOptionsScene()
 		titleText.scale.x = titleText.scale.y = 2;
 		titleText.x = app.renderer.width * 0.5;
 		titleText.y = app.renderer.height * 0.1;
+		var firstButtonRowHeight = app.renderer.height * 0.3;
 
 		// Custom Game
 		widthButton = new Button(AssetLocations.getButtonLocation());
-		customizeButtonDesign(widthButton, "W: " + setWidth, app.renderer.width * 0.12, app.renderer.height * 0.3);
+		customizeButtonDesign(widthButton, "W: " + setWidth, app.renderer.width * 0.12, firstButtonRowHeight);
 		widthButton.sprite.on('pointerdown', onWidthClicked);
 
 		heightButton = new Button(AssetLocations.getButtonLocation());
-		customizeButtonDesign(heightButton, "H: " + setHeight, app.renderer.width * 0.37, app.renderer.height * 0.3);
+		customizeButtonDesign(heightButton, "H: " + setHeight, app.renderer.width * 0.37, firstButtonRowHeight);
 		heightButton.sprite.on('pointerdown', onHeightClicked);
 
 		amountButton = new Button(AssetLocations.getButtonLocation());
-		customizeButtonDesign(amountButton, "B: " + setBombAmount, app.renderer.width * 0.62, app.renderer.height * 0.3);
+		customizeButtonDesign(amountButton, "B: " + setBombAmount, app.renderer.width * 0.62, firstButtonRowHeight);
 		amountButton.sprite.on('pointerdown', onAmountClicked);
 
 		var playButton = new Button(AssetLocations.getButtonLocation());
-		customizeButtonDesign(playButton, "Play!", app.renderer.width * 0.87, app.renderer.height * 0.3);
+		customizeButtonDesign(playButton, "Play!", app.renderer.width * 0.87, firstButtonRowHeight);
 		playButton.textObject.style.fill = 0x00FF00;
 		playButton.sprite.on('pointerdown', onPlayClicked);
 
@@ -93,7 +94,7 @@ function PlayOptionsScene()
 
 	var onWidthClicked = function()
 	{
-		var width = prompt("Please Enter a grid width (Number)", setWidth);
+		var width = prompt("Please Enter a grid width (number)", setWidth);
 		if(!width || isNaN(width)) { return; }
 		if(width < Globals.getMinGridWidth()) { width = Globals.getMinGridWidth();}
 		if(width > Globals.getMaxGridWidth()) { width = Globals.getMaxGridWidth();}
@@ -133,11 +134,7 @@ function PlayOptionsScene()
 	var onPlayClicked = function()
 	{
 		// Set Settings and play
-		globalWidthSet = setWidth;
-		globalHeightSet = setHeight;
-		globalBombAmountSet = setBombAmount;
-		jsonSet = null;
-		sceneManager.setScene("gameScene");
+		sceneManager.setScene("gameScene", getGameSceneArgs());
 	}
 
 	var onBackClicked = function()
@@ -148,11 +145,6 @@ function PlayOptionsScene()
 	var onImportClicked = function()
 	{
 		// Import & Play
-		globalWidthSet = null;
-		globalHeightSet = null;
-		globalBombAmountSet = null;
-		jsonSet = null; 
-
 		var jsonFileLocation = prompt("Please copy/paste the content of the level json file here", "Tip: 'Open json file -> Ctrl A -> Ctrl C' to copy the content");
 		onJsonLoaded(jsonFileLocation)
 	}
@@ -180,6 +172,11 @@ function PlayOptionsScene()
 	    	return;
 	    }
 	    
-		sceneManager.setScene("gameScene");
+		sceneManager.setScene("gameScene", getGameSceneArgs());
+	}
+
+	var getGameSceneArgs = function()
+	{
+		return  {"width":setWidth, "height":setHeight, "bombAmount":setBombAmount, "levelJson":jsonSet};
 	}
 }

@@ -1,7 +1,3 @@
-var globalWidthSet;
-var globalHeightSet;
-var globalBombAmountSet;
-var jsonSet;
 
 GameScene.prototype = Object.create(Scene.prototype);
 function GameScene()
@@ -16,15 +12,15 @@ function GameScene()
 	var gameUI = new GameUI(this);;
 	var time = -1337;
 
-	this.onCreate = function()
+	this.onCreate = function(sceneArgs)
 	{
-		if(jsonSet == null)
+		if(sceneArgs.levelJson == null)
 		{
-			this.createGameWithGeneralInfo(globalWidthSet, globalHeightSet, globalBombAmountSet);
+			this.createGameWithGeneralInfo(sceneArgs.width, sceneArgs.height, sceneArgs.bombAmount);
 		}
 		else
 		{
-			this.createGameWithJsonInfo(jsonSet)
+			this.createGameWithJsonInfo(sceneArgs.levelJson)
 		}
 
 		time = this.getTimeForGrid(grid.getTileAmountX(), grid.getTileAmountY());
@@ -46,7 +42,12 @@ function GameScene()
 
 	this.onDestroy = function()
 	{
-
+		var tiles = grid.getAllTiles();
+		for(var i = 0; i < tiles.length; i++)
+		{
+			tiles[i].getTileEventCenterPoint().removeEventListener(SweepTile.prototype.EVENT_INTERACTION, onTilePressed);
+			tiles[i].getTileEventCenterPoint().removeEventListener(SweepTile.prototype.EVENT_INTERACTION_RIGHT, onTilePressedRight);
+		}
 	}
 
 	this.getCurrentInteractionState = function()

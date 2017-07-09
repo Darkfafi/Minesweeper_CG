@@ -6,7 +6,7 @@ function MenuScene()
 
 	var logoImage = PIXI.Sprite.fromImage('assets/logo.png');
 
-	this.onCreate = function()
+	this.onCreate = function(sceneArgs)
 	{
 		logoImage.anchor.x = logoImage.anchor.y = 0.5;
 		logoImage.x = app.renderer.width * 0.5;

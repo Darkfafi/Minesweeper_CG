@@ -1,10 +1,10 @@
-
 function SceneManager(pixiApplication)
 {
 	this.currentScene = null;
 	this.scenes = [];
 	this.sceneInMaking = null;
-	
+	this.sceneMakingArgs = null;
+
 	var pixiApplication = pixiApplication;
 	var sceneSystem = this;
 
@@ -28,14 +28,17 @@ SceneManager.prototype.removeScene = function(sceneName)
 	this.scenes.splice(sp, 1);
 }
 
-SceneManager.prototype.setScene = function(sceneName)
+SceneManager.prototype.setScene = function(sceneName, sceneArgs)
 {
 	if(this.currentScene != null)
 	{
 		this.getPixiApplication().stage.removeChild(this.currentScene);
 		this.currentScene.onDestroy();
 	}
-	
+
+	if(sceneArgs != SceneManager.prototype.SAME_ARGS_PARAMETER)
+		this.sceneMakingArgs = sceneArgs;
+
 	sceneInMaking = this.scenes[this.getSceneIndex(sceneName)].scenePrototype;
 }
 
@@ -59,12 +62,14 @@ SceneManager.prototype.update = function(deltaTime)
 		this.currentScene = new sceneInMaking;
 		sceneInMaking = null;
 		this.getPixiApplication().stage.addChild(this.currentScene);
-		this.currentScene.onCreate();
+		this.currentScene.onCreate(this.sceneMakingArgs);
 	}
 
 	if(this.currentScene == null) { return; }
 	this.currentScene.onUpdate(deltaTime);
 }
+
+SceneManager.prototype.SAME_ARGS_PARAMETER = "SAME_ARGS_PARAMETER_SCENE_MANAGER";
 
 function SceneManagerItem(name, prototype)
 {
@@ -79,7 +84,7 @@ function Scene()
 	PIXI.DisplayObjectContainer.call(this);
 }
 
-Scene.prototype.onCreate = function()
+Scene.prototype.onCreate = function(sceneArgs)
 {
 
 }

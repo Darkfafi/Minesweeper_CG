@@ -7,7 +7,7 @@ function LevelEditorScene()
 	var gridContainer;
 	var levelEditorUI;
 
-	this.onCreate = function()
+	this.onCreate = function(sceneArgs)
 	{
 		this.createVisualGrid(9, 9);
 		levelEditorUI = new LevelEditorUI(this);
@@ -94,7 +94,7 @@ function LevelEditorScene()
 				sceneManager.setScene("menuScene");
 			break;
 			case LevelEditorUI.prototype.TYPE_BUTTON_WIDTH:
-				var width = prompt("Please Enter a grid width (Number)", grid.getTileAmountX());
+				var width = prompt("Please Enter a grid width (number)", grid.getTileAmountX());
 				if(isNaN(width)) { return; }
 				if(!width) {width = grid.getTileAmountX();}
 				if(width < Globals.getMinGridWidth()) { width = Globals.getMinGridWidth();}
