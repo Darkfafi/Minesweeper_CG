@@ -48,7 +48,7 @@ function MenuScene()
 
 	var onClickedPlay = function()
 	{
-		sceneManager.setScene("gameScene");
+		sceneManager.setScene("playOptionsScene");
 	}
 
 	var onClickedLevelEditor = function()

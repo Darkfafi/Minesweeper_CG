@@ -20,6 +20,7 @@ function main()
 
 	sceneManager.addScene("menuScene", MenuScene);
 	sceneManager.addScene("gameScene", GameScene);
+	sceneManager.addScene("playOptionsScene", PlayOptionsScene);
 	sceneManager.addScene("levelEditorScene", LevelEditorScene);
 
 	sceneManager.setScene("menuScene"); // Index Scene

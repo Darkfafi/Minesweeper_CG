@@ -1,3 +1,8 @@
+var globalWidthSet;
+var globalHeightSet;
+var globalBombAmountSet;
+var jsonSet;
+
 GameScene.prototype = Object.create(Scene.prototype);
 function GameScene()
 {	
@@ -13,8 +18,8 @@ function GameScene()
 
 	this.onCreate = function()
 	{
-		this.createGameWHP(20, 15, 0.152); 
-		time = this.getTimeForGrid(20, 15);
+		this.createGameWHP(globalWidthSet, globalHeightSet, globalBombAmountSet); // Note: 0.152%
+		time = this.getTimeForGrid(globalWidthSet, globalHeightSet);
 		isRunning = true;
 		gameUI.getEventCenterPoint().addEventListener(GameUI.prototype.EVENT_NEW_SELECTION_TAB_ICON, onNewTabIcon);
 	}
@@ -41,7 +46,7 @@ function GameScene()
 		return currentInteractionState;
 	}
 
-	this.createGameWHP = function(width, height, percentage)
+	this.createGameWHP = function(width, height, percentageOrAmount)
 	{
 		if(grid != null) { return; }
 
@@ -62,7 +67,7 @@ function GameScene()
 		gridContainer.pivot.x = gridContainer.width / 2;
 		gridContainer.pivot.y = gridContainer.height / 2;
 
-		assignBombs(percentage);
+		assignBombs(percentageOrAmount);
 
 		setTimeout(this.activateGrid, 500);
 	}
@@ -83,16 +88,17 @@ function GameScene()
 
 	this.getTimeForGrid = function(xTiles, yTiles)
 	{
-		var timeReturn = Math.floor((xTiles * yTiles) / 100) * 120;
+		var timeReturn = Math.round((xTiles * yTiles) / (Globals.getMinGridWidth() * Globals.getMinGridHeight())) * 90;
 		return timeReturn;
 	}
 
-	var assignBombs = function(percentage)
+	var assignBombs = function(percentageOrAmount)
 	{
-		if(percentage <= 0) { return; }
-		if(percentage > 1) { percentage = 1; }
+		var percentage = true;
+		if(percentageOrAmount <= 0) { return; }
+		if(percentageOrAmount > 1) { percentage = false; }
 		var allTiles = grid.getAllTiles();
-		var amountOfBombs = allTiles.length * percentage;
+		var amountOfBombs = ((percentage) ? allTiles.length * percentageOrAmount : percentageOrAmount);
 		var bombAmount = 0;
 		var currentIndex = 0;
 		while(amountOfBombs > 0 && allTiles.length > 0)

@@ -96,9 +96,10 @@ function LevelEditorScene()
 			case LevelEditorUI.prototype.TYPE_BUTTON_WIDTH:
 				var width = prompt("Please Enter a grid width (Number)", grid.getTileAmountX());
 				if(isNaN(width)) { return; }
-				if(width < 9) { width = 9;}
-				if(width > 24) { width = 24;}
-				if(width && width != grid.getTileAmountX()) 
+				if(!width) {width = grid.getTileAmountX();}
+				if(width < Globals.getMinGridWidth()) { width = Globals.getMinGridWidth();}
+				if(width > Globals.getMaxGridWidth()) { width = Globals.getMaxGridWidth();}
+				if(width != grid.getTileAmountX()) 
 				{ 
 					this.createVisualGrid(width, grid.getTileAmountY());
 					console.log("Set new Width to: " + width);
@@ -107,9 +108,10 @@ function LevelEditorScene()
 			case LevelEditorUI.prototype.TYPE_BUTTON_HEIGHT:
 				var height = prompt("Please Enter a grid height (number)", grid.getTileAmountY());
 				if(isNaN(height)) { return; }
-				if(height < 9) { height = 9;}
-				if(height > 16) { height = 16;}
-				if(height && height != grid.getTileAmountY()) 
+				if(!height) {height = grid.getTileAmountY();}
+				if(height < Globals.getMinGridHeight()) { height = Globals.getMinGridHeight();}
+				if(height > Globals.getMaxGridHeight()) { height = Globals.getMaxGridHeight();}
+				if(height != grid.getTileAmountY()) 
 				{ 
 					this.createVisualGrid(grid.getTileAmountX(), height);
 					console.log("Set new Height to: " + height);
