@@ -3,6 +3,7 @@ function GameScene()
 {	
 	Scene.call(this);
 	this.isRunning = false;
+	this.lockedChainTiles = [];
 
 	var grid;
 	var gridContainer = new PIXI.Container();
@@ -12,7 +13,7 @@ function GameScene()
 
 	this.onCreate = function()
 	{
-		this.createGameWHP(20, 15, 0.15625);
+		this.createGameWHP(20, 15, 0.152); 
 		time = this.getTimeForGrid(20, 15);
 		isRunning = true;
 		gameUI.getEventCenterPoint().addEventListener(GameUI.prototype.EVENT_NEW_SELECTION_TAB_ICON, onNewTabIcon);
@@ -51,6 +52,7 @@ function GameScene()
 			var sprt = tiles[i].setTileSprite('assets/tile.png', 32);
 			tiles[i].setIsInteractable(true);
 			tiles[i].getTileEventCenterPoint().addEventListener(SweepTile.prototype.EVENT_INTERACTION, onTilePressed);
+			tiles[i].getTileEventCenterPoint().addEventListener(SweepTile.prototype.EVENT_INTERACTION_RIGHT, onTilePressedRight);
 			gridContainer.addChild(sprt);
 		}
 
@@ -109,6 +111,20 @@ function GameScene()
 		}
 	}.bind(this);
 
+	var onTilePressedRight = function(tile)
+	{
+		switch(this.getCurrentInteractionState())
+		{
+			case 0:
+				tile.setFlaggedState(!tile.getFlaggedState());
+			break;
+			case 1:
+				if(tile.getFlaggedState()) { return; }
+				this.tryTile(tile);
+			break;
+		}
+	}.bind(this);
+
 	var onNewTabIcon = function(iconType)
 	{
 		currentInteractionState = iconType;
@@ -122,7 +138,9 @@ GameScene.prototype.tileClearChain = function(tile)
 	{
 		if(!neighbours[i].getIsBombTile() && !neighbours[i].getDiscoveredState())
 		{
-			this.tryTileDelayed(neighbours[i], 75);
+			if(this.lockedChainTiles.indexOf(neighbours[i]) != -1) { continue; }
+			this.lockedChainTiles.push(neighbours[i]);
+			this.tryTileDelayed(neighbours[i], 77);
 		}
 	}
 }
@@ -130,7 +148,16 @@ GameScene.prototype.tileClearChain = function(tile)
 GameScene.prototype.tryTileDelayed = function(tile, delayTime)
 {
 	tile.setIsInteractable(false);
-	setTimeout(function (){ this.tryTile(tile); }.bind(this), delayTime);
+	setTimeout(function ()
+	{  
+		this.tryTile(tile); 
+		var indexLockChain = this.lockedChainTiles.indexOf(tile);
+		if(indexLockChain != -1)
+		{
+			this.lockedChainTiles.splice(indexLockChain, 1);
+		}
+
+	}.bind(this), delayTime);
 	
 }
 
@@ -169,6 +196,7 @@ GameScene.prototype.tryTile = function(tile)
 
 GameScene.prototype.endGame = function(wonGameBoolean, reasonString)
 {
+	if(!isRunning) { return; }
 	var tiles = this.getGrid().getAllTiles();
 	for(var i = 0; i < tiles.length; i++)
 	{
@@ -176,6 +204,8 @@ GameScene.prototype.endGame = function(wonGameBoolean, reasonString)
 		tiles[i].setIsInteractable(false);
 	}
 	isRunning = false;
+
+	var esp = new EndScreenPopUp(wonGameBoolean, reasonString, this);
 }
 
 GameScene.prototype.checkWinCondition = function()

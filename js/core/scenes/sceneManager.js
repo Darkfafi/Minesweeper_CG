@@ -3,6 +3,7 @@ function SceneManager(pixiApplication)
 {
 	this.currentScene = null;
 	this.scenes = [];
+	this.sceneInMaking = null;
 	
 	var pixiApplication = pixiApplication;
 	var sceneSystem = this;
@@ -35,9 +36,7 @@ SceneManager.prototype.setScene = function(sceneName)
 		this.currentScene.onDestroy();
 	}
 	
-	this.currentScene = new this.scenes[this.getSceneIndex(sceneName)].scenePrototype;
-	this.getPixiApplication().stage.addChild(this.currentScene);
-	this.currentScene.onCreate();
+	sceneInMaking = this.scenes[this.getSceneIndex(sceneName)].scenePrototype;
 }
 
 SceneManager.prototype.getSceneIndex = function(sceneName)
@@ -55,6 +54,14 @@ SceneManager.prototype.getSceneIndex = function(sceneName)
 
 SceneManager.prototype.update = function(deltaTime)
 {
+	if(sceneInMaking != null)
+	{
+		this.currentScene = new sceneInMaking;
+		sceneInMaking = null;
+		this.getPixiApplication().stage.addChild(this.currentScene);
+		this.currentScene.onCreate();
+	}
+
 	if(this.currentScene == null) { return; }
 	this.currentScene.onUpdate(deltaTime);
 }

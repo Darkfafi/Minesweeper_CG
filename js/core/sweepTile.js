@@ -99,8 +99,9 @@ function SweepTile(gridIndexX, gridIndexY, grid)
 		flagSprite.scale.x = flagSprite.scale.y = 0.8;
 		flagSprite.y = tileSprite.height * -0.1;
 
-		tileSprite.on('pointerdown', onInteraction);
-
+		tileSprite.on('mousedown', onInteraction);
+		tileSprite.on('rightdown', onRightInteraction);
+		tileSprite.on('touchstart', onInteraction);
 		return tileSprite;
 	}
 
@@ -179,9 +180,16 @@ function SweepTile(gridIndexX, gridIndexY, grid)
 		if(!isInteractable) { return; }
 		tileEventCenterPoint.dispatchEvent(SweepTile.prototype.EVENT_INTERACTION, tileObject);
 	}
+
+	var onRightInteraction = function()
+	{
+		if(!isInteractable) { return; }
+		tileEventCenterPoint.dispatchEvent(SweepTile.prototype.EVENT_INTERACTION_RIGHT, tileObject);
+	}
 }
 
 SweepTile.prototype.EVENT_INTERACTION = "InteractionEvent";
+SweepTile.prototype.EVENT_INTERACTION_RIGHT = "InteractionRightEvent";
 
 SweepTile.prototype.showNumber = function(number)
 {
